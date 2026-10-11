@@ -1,0 +1,7 @@
+.env
+stock_state.json
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.log

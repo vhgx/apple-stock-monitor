@@ -1,0 +1,34 @@
+name: 1. Monitor de Estoque (Alerta Imediato)
+
+on:
+  schedule:
+    # Executa a cada 15 minutos na nuvem
+    - cron: '*/15 * * * *'
+  workflow_dispatch: # Permite testar manualmente pelo botão "Run workflow" no GitHub
+
+jobs:
+  check-stock:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Check Apple Store Stock
+        # NOTA: O script só dispara e-mail SE houver estoque disponível.
+        # Se continuar esgotado, NÃO envia nada.
+        env:
+          PART_NUMBER: "MJWA4LL/A"
+          PRODUCT_NAME: "iPhone 18 Pro Max 512GB Burgundy"
+          ZIP_CODE: "10001"
+          SMTP_SERVER: "smtp-mail.outlook.com"
+          SMTP_PORT: "587"
+          EMAIL_SENDER: ${{ secrets.EMAIL_SENDER }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+          EMAIL_RECEIVER: ${{ secrets.EMAIL_RECEIVER }}
+        run: |
+          python3 apple_monitor.py --check

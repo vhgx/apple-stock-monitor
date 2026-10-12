@@ -44,6 +44,7 @@ SMTP_PORT = int(os.environ.get("SMTP_PORT", "587"))
 EMAIL_SENDER = os.environ.get("EMAIL_SENDER", "")
 EMAIL_PASSWORD = os.environ.get("EMAIL_PASSWORD", "")
 EMAIL_RECEIVER = os.environ.get("EMAIL_RECEIVER", "")
+RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")
 
 CHECK_INTERVAL_MINUTES = int(os.environ.get("CHECK_INTERVAL_MINUTES", "5"))
 STATE_FILE = os.path.join(os.path.dirname(__file__), "stock_state.json")
@@ -144,18 +145,47 @@ class AppleStockChecker:
         return results
 
 
+def send_resend_email(subject, html_content):
+    """Envia e-mail via API do Resend (100% confiável, sem problemas de SMTP)."""
+    if not EMAIL_RECEIVER:
+        print(f"{YELLOW}[AVISO]{RESET} EMAIL_RECEIVER não configurado. Alerta não enviado.")
+        return False
+
+    url = "https://api.resend.com/emails"
+    payload = json.dumps({
+        "from": "Apple Stock Bot <onboarding@resend.dev>",
+        "to": [EMAIL_RECEIVER],
+        "subject": subject,
+        "html": html_content
+    }).encode("utf-8")
+
+    req = urllib.request.Request(
+        url,
+        data=payload,
+        headers={
+            "Authorization": f"Bearer {RESEND_API_KEY}",
+            "Content-Type": "application/json",
+            "User-Agent": "AppleStockMonitor/1.0"
+        }
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            if resp.status in (200, 201):
+                print(f"{GREEN}[SUCESSO]{RESET} E-mail enviado via Resend para: {EMAIL_RECEIVER}")
+                return True
+    except Exception as e:
+        print(f"{RED}[ERRO]{RESET} Falha ao enviar via Resend: {e}")
+        return False
+
+
 def send_email_alert(available_stores, is_test=False):
     """Envia alerta por e-mail com a lista de lojas disponíveis."""
-    if not EMAIL_SENDER or not EMAIL_PASSWORD or not EMAIL_RECEIVER:
+    if not RESEND_API_KEY and (not EMAIL_SENDER or not EMAIL_PASSWORD or not EMAIL_RECEIVER):
         print(f"{YELLOW}[AVISO]{RESET} Credenciais de e-mail não configuradas no .env. Alerta não enviado.")
         return False
 
-    msg = MIMEMultipart("alternative")
     prefix = "[TESTE] " if is_test else "🚨 [DISPONÍVEL] "
-    msg["Subject"] = f"{prefix}Apple Store NY: {PRODUCT_NAME} em {len(available_stores)} loja(s)!"
-    msg["From"] = f"Apple Stock Bot <{EMAIL_SENDER}>"
-    msg["To"] = EMAIL_RECEIVER
-
+    subject = f"{prefix}Apple Store NY: {PRODUCT_NAME} em {len(available_stores)} loja(s)!"
     now_str = datetime.now().strftime("%d/%m/%Y às %H:%M:%S")
 
     # Itens de loja em HTML
@@ -225,6 +255,13 @@ def send_email_alert(available_stores, is_test=False):
     </html>
     """
 
+    if RESEND_API_KEY:
+        return send_resend_email(subject, html)
+
+    msg = MIMEMultipart("alternative")
+    msg["Subject"] = subject
+    msg["From"] = f"Apple Stock Bot <{EMAIL_SENDER}>"
+    msg["To"] = EMAIL_RECEIVER
     msg.attach(MIMEText(html, "html"))
 
     try:
@@ -241,12 +278,11 @@ def send_email_alert(available_stores, is_test=False):
 
 def send_heartbeat_email(stores):
     """Envia o e-mail diário de confirmação 'Produto Apple Checado'."""
-    if not EMAIL_SENDER or not EMAIL_PASSWORD or not EMAIL_RECEIVER:
+    if not RESEND_API_KEY and (not EMAIL_SENDER or not EMAIL_PASSWORD or not EMAIL_RECEIVER):
         print(f"{YELLOW}[AVISO]{RESET} Credenciais de e-mail não configuradas no .env. Aviso não enviado.")
         return False
 
-    msg = MIMEMultipart("alternative")
-    msg["Subject"] = "Produto Apple Checado: Monitor Ativo (Status Diário)"
+    subject = "Produto Apple Checado: Monitor Ativo (Status Diário)"
     msg["From"] = f"Apple Stock Bot <{EMAIL_SENDER}>"
     msg["To"] = EMAIL_RECEIVER
 
@@ -304,6 +340,13 @@ def send_heartbeat_email(stores):
     </html>
     """
 
+    if RESEND_API_KEY:
+        return send_resend_email(subject, html)
+
+    msg = MIMEMultipart("alternative")
+    msg["Subject"] = subject
+    msg["From"] = f"Apple Stock Bot <{EMAIL_SENDER}>"
+    msg["To"] = EMAIL_RECEIVER
     msg.attach(MIMEText(html, "html"))
 
     try:

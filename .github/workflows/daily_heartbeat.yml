@@ -28,5 +28,6 @@ jobs:
           EMAIL_SENDER: ${{ secrets.EMAIL_SENDER }}
           EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
           EMAIL_RECEIVER: ${{ secrets.EMAIL_RECEIVER }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
         run: |
           python3 apple_monitor.py --heartbeat

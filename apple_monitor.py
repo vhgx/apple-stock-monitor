@@ -256,8 +256,10 @@ def send_email_alert(available_stores, is_test=False):
     """
 
     if RESEND_API_KEY:
+        print(f"{CYAN}[INFO]{RESET} Enviando e-mail via API do Resend...")
         return send_resend_email(subject, html)
 
+    print(f"{YELLOW}[INFO]{RESET} RESEND_API_KEY não detectada. Tentando conexão via SMTP ({SMTP_SERVER})...")
     msg = MIMEMultipart("alternative")
     msg["Subject"] = subject
     msg["From"] = f"Apple Stock Bot <{EMAIL_SENDER}>"
@@ -341,8 +343,10 @@ def send_heartbeat_email(stores):
     """
 
     if RESEND_API_KEY:
+        print(f"{CYAN}[INFO]{RESET} Enviando aviso diário via API do Resend...")
         return send_resend_email(subject, html)
 
+    print(f"{YELLOW}[INFO]{RESET} RESEND_API_KEY não detectada. Tentando conexão via SMTP ({SMTP_SERVER})...")
     msg = MIMEMultipart("alternative")
     msg["Subject"] = subject
     msg["From"] = f"Apple Stock Bot <{EMAIL_SENDER}>"

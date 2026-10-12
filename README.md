@@ -37,9 +37,9 @@ ZIP_CODE=10001
 
 SMTP_SERVER=smtp-mail.outlook.com
 SMTP_PORT=587
-EMAIL_SENDER=vitorh@live.co.uk
+EMAIL_SENDER=seu_email@exemplo.com
 EMAIL_PASSWORD=sua_senha_de_app_microsoft
-EMAIL_RECEIVER=vitorh@live.co.uk
+EMAIL_RECEIVER=seu_email@exemplo.com
 ```
 
 ### 2. Gerar a Senha de Aplicativo na Conta Microsoft (Outlook / Live)

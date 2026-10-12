@@ -285,8 +285,6 @@ def send_heartbeat_email(stores):
         return False
 
     subject = "Produto Apple Checado: Monitor Ativo (Status Diário)"
-    msg["From"] = f"Apple Stock Bot <{EMAIL_SENDER}>"
-    msg["To"] = EMAIL_RECEIVER
 
     now_str = datetime.now().strftime("%d/%m/%Y às %H:%M:%S")
     available_stores = [s for s in stores if s.get("is_available")]

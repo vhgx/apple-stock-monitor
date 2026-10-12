@@ -3,7 +3,7 @@ name: 1. Monitor de Estoque (Alerta Imediato)
 on:
   schedule:
     # Executa a cada 15 minutos na nuvem
-    - cron: '*/15 * * * *'
+    - cron: '7,17,27,37,47,57 * * * *'
   workflow_dispatch: # Permite testar manualmente pelo botão "Run workflow" no GitHub
 
 jobs:

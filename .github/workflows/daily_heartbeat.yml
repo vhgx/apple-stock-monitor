@@ -3,7 +3,7 @@ name: 2. Aviso Diario - Produto Apple Checado (11:30 BRT)
 on:
   schedule:
     # 11:30 no horário de Brasília (UTC-3) = 14:30 no horário UTC
-    - cron: '30 14 * * *'
+    - cron: '32 14 * * *'
   workflow_dispatch: # Permite disparar manualmente para testar o recebimento
 
 jobs:

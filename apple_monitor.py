@@ -35,9 +35,10 @@ except ImportError:
                     os.environ.setdefault(key.strip(), val.strip().strip('"').strip("'"))
 
 # Configurações Padrão
-PART_NUMBER = os.environ.get("PART_NUMBER", "MJWA4LL/A")
-PRODUCT_NAME = os.environ.get("PRODUCT_NAME", "iPhone 18 Pro Max 512GB Burgundy")
+PART_NUMBER = os.environ.get("PART_NUMBER", "MK1G4LL/A")
+PRODUCT_NAME = os.environ.get("PRODUCT_NAME", "iPhone Duo 512GB Star White")
 ZIP_CODE = os.environ.get("ZIP_CODE", "10001")
+BUY_URL = os.environ.get("BUY_URL", "https://www.apple.com/shop/buy-iphone/iphone-duo" if "duo" in PRODUCT_NAME.lower() else "https://www.apple.com/shop/buy-iphone")
 
 SMTP_SERVER = os.environ.get("SMTP_SERVER", "smtp-mail.outlook.com")
 SMTP_PORT = int(os.environ.get("SMTP_PORT", "587"))
@@ -80,7 +81,7 @@ class AppleStockChecker:
         """Gera cookies de sessão válidos para evitar bloqueios da Akamai/Apple."""
         if self._warmup_done:
             return
-        warmup_url = "https://www.apple.com/shop/buy-iphone"
+        warmup_url = BUY_URL
         req = urllib.request.Request(
             warmup_url,
             headers={
@@ -108,7 +109,7 @@ class AppleStockChecker:
             headers={
                 **self.headers,
                 "Accept": "application/json",
-                "Referer": "https://www.apple.com/shop/buy-iphone",
+                "Referer": BUY_URL,
             },
         )
 
@@ -138,8 +139,12 @@ class AppleStockChecker:
                 "is_available": is_available,
                 "pickup_display": pickup_display,
                 "pickup_quote": pickup_quote,
-                "product_title": parts.get("storePickupProductTitle", PRODUCT_NAME),
-                "buy_url": f"https://www.apple.com/shop/buy-iphone"
+                "product_title": (
+                    parts.get("messageTypes", {}).get("regular", {}).get("storePickupProductTitle")
+                    or parts.get("storePickupProductTitle")
+                    or PRODUCT_NAME
+                ),
+                "buy_url": BUY_URL
             })
 
         return results
@@ -241,7 +246,7 @@ def send_email_alert(available_stores, is_test=False):
         </table>
 
         <div style="text-align: center;">
-          <a href="https://www.apple.com/shop/buy-iphone" class="btn">
+          <a href="{BUY_URL}" class="btn">
             Abrir Apple Store e Reservar Agora
           </a>
         </div>

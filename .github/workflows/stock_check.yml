@@ -22,8 +22,8 @@ jobs:
         # NOTA: O script só dispara e-mail SE houver estoque disponível.
         # Se continuar esgotado, NÃO envia nada.
         env:
-          PART_NUMBER: "MJWA4LL/A"
-          PRODUCT_NAME: "iPhone 18 Pro Max 512GB Burgundy"
+          PART_NUMBER: "MK1G4LL/A"
+          PRODUCT_NAME: "iPhone Duo 512GB Star White"
           ZIP_CODE: "10001"
           SMTP_SERVER: "smtp-mail.outlook.com"
           SMTP_PORT: "587"

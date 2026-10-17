@@ -3,10 +3,10 @@
 Monitor automatizado de estoque para retirada nas lojas físicas da Apple em Nova York (ZIP `10001`), com alertas imediatos por e-mail via SMTP.
 
 Configurado especificamente para:
-- **Modelo:** iPhone 18 Pro Max
-- **Cor:** Burgundy
+- **Modelo:** iPhone Duo
+- **Cor:** Star White
 - **Capacidade:** 512GB
-- **Part Number (SKU oficial):** `MJWA4LL/A`
+- **Part Number (SKU oficial):** `MK1G4LL/A`
 - **Região monitorada:** Manhattan e arredores (Fifth Avenue, Grand Central, SoHo, West 14th St, Upper West/East Side, World Trade Center, Williamsburg, Brooklyn, etc.)
 
 ---
@@ -14,7 +14,7 @@ Configurado especificamente para:
 ## 🚀 Como Funciona
 
 1. O script executa um aquecimento de sessão para obter cookies legítimos da Apple e evitar bloqueios da CDN (Akamai).
-2. Consulta o endpoint de disponibilidade de retirada (`/shop/retail/pickup-message`) para o SKU `MJWA4LL/A` e CEP `10001`.
+2. Consulta o endpoint de disponibilidade de retirada (`/shop/retail/pickup-message`) para o SKU `MK1G4LL/A` e CEP `10001`.
 3. Analisa o status `pickupDisplay` de cada uma das 12 lojas da região.
 4. Quando uma loja mudar para `available`, dispara um e-mail formatado em HTML com link direto de reserva.
 5. Mantém um arquivo local de estado (`stock_state.json`) para evitar envio repetido de e-mails para lojas já notificadas.
@@ -31,8 +31,8 @@ cp .env.example .env
 
 Abra o `.env` e preencha suas informações:
 ```ini
-PART_NUMBER=MJWA4LL/A
-PRODUCT_NAME=iPhone 18 Pro Max 512GB Burgundy
+PART_NUMBER=MK1G4LL/A
+PRODUCT_NAME=iPhone Duo 512GB Star White
 ZIP_CODE=10001
 
 SMTP_SERVER=smtp-mail.outlook.com
@@ -65,7 +65,7 @@ python3 apple_monitor.py --status
 Exemplo de saída:
 ```text
 === STATUS DE DISPONIBILIDADE NA APPLE STORE (NY - 10001) ===
-Produto: iPhone 18 Pro Max 512GB Burgundy (SKU: MJWA4LL/A)
+Produto: iPhone Duo 512GB Star White (SKU: MK1G4LL/A)
 
 Loja                     | Distância  | Status          | Detalhes
 ---------------------------------------------------------------------------
@@ -116,7 +116,7 @@ crontab -e
 ```
 Adicione a linha:
 ```cron
-*/5 * * * * cd /Users/vitorh/Documents/antigravity/fervent-fermi && /usr/bin/python3 apple_monitor.py --check >> cron_monitor.log 2>&1
+*/5 * * * * cd /Users/vitorh/Documents/antigravity/apple-stock && /usr/bin/python3 apple_monitor.py --check >> cron_monitor.log 2>&1
 ```
 
 ### Opção C: 100% Grátis na Nuvem (GitHub Actions)
